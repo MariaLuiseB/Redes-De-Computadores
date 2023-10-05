@@ -12,13 +12,12 @@ server_address = ('192.168.1.111', 65000)
 received_files_folder = "received_files"
 
 # Função para lidar com a conexão de um cliente
-
-
-client_sockets = {}
+client_sockets = {} # cria um dicionario para armazenar os clientes conectados
 
 def handle_client(client_socket):
     try:
-        request = client_socket.recv(1024).decode('utf-8')
+        # Recebe a solicitação do cliente
+        request = client_socket.recv(1024).decode('utf-8') 
         if request.startswith("SEND"):  # SEND nome_do_arquivo
             _, file_name = request.split()
             save_file(client_socket, file_name)
@@ -34,8 +33,8 @@ def handle_client(client_socket):
 
 def register_with_name_server():
     # Cria um socket UDP para broadcasting
-    broadcast_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    broadcast_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    broadcast_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # AF_INET = IPV4, SOCK_DGRAM = UDP
+    broadcast_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1) # essa linha permite que o socket seja reutilizado p
     broadcast_socket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
 
     # Envia uma mensagem de broadcast
@@ -118,7 +117,7 @@ def send_files():
     else:
         print("O arquivo local não existe.")
 
-
+# Função para aceitar conexões de clientes
 def accept_connections():
     # Configurar a pasta para salvar os arquivos recebidos
     if not os.path.exists(received_files_folder):
@@ -136,9 +135,8 @@ def accept_connections():
                 target=handle_client, args=(client_socket,))
             client_handler_thread.start()
 
-# Função principal do servidor
 
-
+# Função principal do servidor DNS para resolver nomes dos clientes
 def resolve():
     # faz consulta no dns e resolve o nome do servidor
     udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -153,7 +151,7 @@ def resolve():
 
 
 def cadastrar():
-    # Cadastra o nome do servidor no servidor de nomes
+    # Cadastra o nome do servidor no servidor de nomes via UDP
     udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     udp_socket.settimeout(5)
 
